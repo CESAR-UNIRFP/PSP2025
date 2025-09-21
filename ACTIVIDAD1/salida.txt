@@ -1,0 +1,2 @@
+Fecha y hora de inicio: 2024-10-17T18:40:46.673598300
+Resultado de la multiplicación: 30
