@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CRUD ultra rápido - json-server</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 24px auto; }
+    input { padding: 8px; margin-right: 8px; }
+    button { padding: 8px 10px; margin-right: 6px; cursor: pointer; }
+    li { margin: 8px 0; }
+    code { background: #f2f2f2; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h2>CRUD ultra rápido (json-server)</h2>
+  <p>API: <code>http://localhost:3000/alumnos</code></p>
+
+  <h3>Crear alumno</h3>
+  <input id="nombre" placeholder="Nombre" />
+  <input id="curso" placeholder="Curso" value="PSP" />
+  <button id="btnCrear">Crear</button>
+
+  <h3>Listado</h3>
+  <button id="btnRefrescar">Refrescar</button>
+  <ul id="lista"></ul>
+
+  <script>
+    const API = "http://localhost:3000/alumnos";
+    const $lista = document.getElementById("lista");
+    const $nombre = document.getElementById("nombre");
+    const $curso = document.getElementById("curso");
+
+    async function cargar() {
+      const res = await fetch(API);
+      const data = await res.json();
+      $lista.innerHTML = data.map(a => `
+        <li>
+          <b>${a.nombre}</b> — ${a.curso} (id: ${a.id})
+          <button onclick="editar(${a.id}, '${escapeQuotes(a.nombre)}', '${escapeQuotes(a.curso)}')">Editar</button>
+          <button onclick="borrar(${a.id})">Borrar</button>
+        </li>
+      `).join("");
+    }
+
+    function escapeQuotes(s) {
+      return String(s).replaceAll("'", "\\'");
+    }
+
+    async function crear() {
+      const nombre = $nombre.value.trim();
+      const curso = $curso.value.trim();
+      if (!nombre || !curso) return alert("Rellena nombre y curso");
+
+      await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, curso })
+      });
+
+      $nombre.value = "";
+      await cargar();
+    }
+
+    // EDIT (con prompt para hacerlo ultra simple)
+    window.editar = async (id, nombreActual, cursoActual) => {
+      const nombre = prompt("Nuevo nombre:", nombreActual);
+      if (nombre === null) return;
+
+      const curso = prompt("Nuevo curso:", cursoActual);
+      if (curso === null) return;
+
+      await fetch(`${API}/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, curso })
+      });
+
+      await cargar();
+    };
+
+    // DELETE
+    window.borrar = async (id) => {
+      if (!confirm("¿Seguro que quieres borrar?")) return;
+      await fetch(`${API}/${id}`, { method: "DELETE" });
+      await cargar();
+    };
+
+    document.getElementById("btnCrear").addEventListener("click", crear);
+    document.getElementById("btnRefrescar").addEventListener("click", cargar);
+
+    cargar();
+  </script>
+</body>
+</html>

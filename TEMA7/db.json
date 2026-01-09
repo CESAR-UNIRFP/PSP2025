@@ -1,0 +1,24 @@
+{
+  "alumnos": [
+    {
+      "id": "1",
+      "nombre": "Ank",
+      "curso": "PSP"
+    },
+    {
+      "id": "2",
+      "name": "CESAR2",
+      "curso": "PSP"
+    },
+    {
+      "id": "3",
+      "name": "CESAR",
+      "curso": "PSP"
+    },
+    {
+      "id": "4",
+      "name": "CESAR3",
+      "curso": "PSP"
+    }
+  ]
+}
